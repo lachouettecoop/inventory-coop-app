@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">InventaireCoop</string>
+    <string name="serverUrl">URL du serveur:</string>
+    <string name="next">Suivant</string>
+    <string name="urlHint">Entrer l\'adresse du serveur</string>
+    <string name="check">Verifier</string>
+    <string name="refresh">Rafraichir</string>
+
+    <string name="scan">Scaner</string>
+    <string name="barcode">Code barre</string>
+    <string name="productName">Nom du produit</string>
+    <string name="name">Votre nom</string>
+    <string name="zone">Num. de la zone</string>
+    <string name="count">Quantité</string>
+    <string name="validate">Valider</string>
+</resources>
