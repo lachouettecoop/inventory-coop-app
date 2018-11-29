@@ -29,18 +29,40 @@ import cz.msebera.android.httpclient.Header;
 public class Server extends AppCompatActivity {
     private EditText serverUrl;
     private Button serverCheck;
-    private Button next;
     private RadioGroup rgp;
+    private Button serverValidate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.server);
 
-        serverUrl = findViewById(R.id.serverUrl);
-        serverCheck = findViewById(R.id.serverCheck);
+        serverUrl = findViewById(R.id.txtServerUrl);
+        serverCheck = findViewById(R.id.btnServerCheck);
+        rgp = findViewById(R.id.rgInventoryList);
+        serverValidate = findViewById(R.id.btnServerValidate);
 
         serverUrl.setText("192.168.1.26:8000");
+
+        serverValidate.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                serverUrl.setEnabled(false);
+                serverCheck.setEnabled(false);
+                serverValidate.setEnabled(false);
+                ModelStorage.inst().setSelectedInventory(rgp.getCheckedRadioButtonId());
+                getProducts();
+            }
+        });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        rgp.clearCheck();
+        rgp.removeAllViews();
+        serverUrl.setEnabled(true);
+        serverCheck.setEnabled(true);
+        serverValidate.setEnabled(false);
     }
 
     private String getServerUrl() {
@@ -48,17 +70,10 @@ public class Server extends AppCompatActivity {
     }
 
     public void checkServer(View view) {
-        ViewGroup viewGroup = (ViewGroup) ((ViewGroup) this
-                .findViewById(android.R.id.content)).getChildAt(0);
-
-        if (next != null) {
-            viewGroup.removeView(next);
-            next = null;
-        }
-        if (rgp != null) {
-            viewGroup.removeView(rgp);
-            rgp = null;
-        }
+        rgp.clearCheck();
+        rgp.removeAllViews();
+        serverCheck.setEnabled(false);
+        serverValidate.setEnabled(false);
 
         String url = getServerUrl();
         if (!url.startsWith("http")) {
@@ -75,19 +90,24 @@ public class Server extends AppCompatActivity {
                 } catch (JSONException e)
                 {
                     showToast("Bad server");
+                } finally {
+                    serverCheck.setEnabled(true);
                 }
             }
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                 showToast("Bad server");
+                serverCheck.setEnabled(true);
             }
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 showToast("Bad server");
+                serverCheck.setEnabled(true);
             }
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
                 showToast("Bad server");
+                serverCheck.setEnabled(true);
             }
         });
     }
@@ -137,11 +157,6 @@ public class Server extends AppCompatActivity {
     }
 
     public void createInventoryList() {
-        ViewGroup viewGroup = (ViewGroup) ((ViewGroup) this
-                .findViewById(android.R.id.content)).getChildAt(0);
-
-        rgp = new RadioGroup(getApplicationContext());
-
         List<InventoryModel> inventories = ModelStorage.inst().getInventoriesList();
         boolean isFirst = true;
         for (InventoryModel inventory : inventories) {
@@ -156,17 +171,12 @@ public class Server extends AppCompatActivity {
                 }
             }
         }
-        viewGroup.addView(rgp);
-
-        next = new Button(getApplicationContext());
-        next.setText(R.string.next);
-        next.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                ModelStorage.inst().setSelectedInventory(rgp.getCheckedRadioButtonId());
-                getProducts();
-            }
-        });
-        viewGroup.addView(next);
+        if(isFirst) {
+            // No inventory -> No button
+            serverValidate.setEnabled(false);
+        } else {
+            serverValidate.setEnabled(true);
+        }
     }
 
     private void getProducts() {

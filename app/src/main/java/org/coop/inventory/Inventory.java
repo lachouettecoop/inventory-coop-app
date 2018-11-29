@@ -45,6 +45,7 @@ public class Inventory extends AppCompatActivity {
     private AutoCompleteTextView txtName;
     private EditText txtQty;
     private Button btnValidate;
+    private ListView listView;
 
     private CountsArrayAdapter countsAdapter = null;
     private ProductModel selectedProduct = null;
@@ -60,8 +61,7 @@ public class Inventory extends AppCompatActivity {
         txtName = findViewById(R.id.txtName);
         txtQty = findViewById(R.id.txtQty);
         btnValidate = findViewById(R.id.btnValidate);
-
-        btnValidate.setEnabled(false);
+        listView = findViewById(R.id.countsView);
 
         txtBarcode.setAdapter(new ArrayAdapter<String>(this,
                 android.R.layout.simple_dropdown_item_1line,
@@ -95,9 +95,6 @@ public class Inventory extends AppCompatActivity {
             public void onTextChanged(CharSequence s, int start, int before, int count) {}
         });
 
-        txtName.setAdapter(new ArrayAdapter<String>(this,
-                android.R.layout.simple_dropdown_item_1line,
-                ModelStorage.inst().getSelectedInventory().getProductNames()));
         txtName.setThreshold(1);
         txtName.setHint(R.string.productName);
         txtName.addTextChangedListener(new TextWatcher() {
@@ -148,11 +145,21 @@ public class Inventory extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {}
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        txtBarcode.setText("");
+        txtName.setAdapter(new ArrayAdapter<String>(this,
+                android.R.layout.simple_dropdown_item_1line,
+                ModelStorage.inst().getSelectedInventory().getProductNames()));
 
         List<CountView> counts = new ArrayList<>();
         for(ProductModel product : ModelStorage.inst().getSelectedInventory().getProductsByName().values()) {
             for(CountModel count: product.getCounts().values()) {
-                if(count.getCounterName().equalsIgnoreCase(ModelStorage.inst().getCounterName())) {
+                if(count.getCounterName().equalsIgnoreCase(ModelStorage.inst().getCounterName()) &&
+                        count.getZoneName().equalsIgnoreCase(ModelStorage.inst().getZoneName())) {
                     counts.add(new CountView(product.getName(), count.getQty(), count.getUpdated()));
                 }
             }
@@ -165,7 +172,6 @@ public class Inventory extends AppCompatActivity {
         });
 
         countsAdapter = new CountsArrayAdapter(this, counts);
-        ListView listView = findViewById(R.id.countsView);
         listView.setAdapter(countsAdapter);
     }
 

@@ -19,7 +19,7 @@
         app:srcCompat="@drawable/logo" />
 
     <EditText
-        android:id="@+id/serverUrl"
+        android:id="@+id/txtServerUrl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
@@ -27,7 +27,7 @@
         android:inputType="textUri" />
 
     <Button
-        android:id="@+id/serverCheck"
+        android:id="@+id/btnServerCheck"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="checkServer"
@@ -36,7 +36,19 @@
     <View
         android:id="@+id/divider"
         android:layout_width="match_parent"
-        android:layout_height="10dp"
+        android:layout_height="1dp"
         android:background="?android:attr/listDivider" />
+
+    <RadioGroup
+        android:id="@+id/rgInventoryList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <Button
+        android:id="@+id/btnServerValidate"
+        android:layout_gravity="end"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="@string/validate" />
 
 </LinearLayout>
