@@ -26,12 +26,28 @@
         android:hint="@string/serverUrl"
         android:inputType="textUri" />
 
+    <EditText
+        android:id="@+id/txtEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="@string/email"
+        android:inputType="textEmailAddress" />
+
+    <EditText
+        android:id="@+id/txtPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="@string/password"
+        android:inputType="textPassword" />
+
     <Button
         android:id="@+id/btnServerCheck"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="checkServer"
-        android:text="@string/check" />
+        android:text="@string/validate" />
 
     <View
         android:id="@+id/divider"
@@ -45,10 +61,10 @@
         android:layout_height="match_parent" />
 
     <Button
-        android:id="@+id/btnServerValidate"
+        android:id="@+id/btnServerNext"
         android:layout_gravity="end"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:text="@string/validate" />
+        android:text="@string/next" />
 
 </LinearLayout>

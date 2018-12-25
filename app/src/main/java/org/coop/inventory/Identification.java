@@ -6,8 +6,6 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -16,7 +14,7 @@ import org.coop.inventory.model.ModelStorage;
 public class Identification extends AppCompatActivity {
 
     private Button indentificationNext;
-    private AutoCompleteTextView identificationName;
+    private EditText identificationName;
     private EditText identificationZone;
 
     @Override
@@ -26,16 +24,11 @@ public class Identification extends AppCompatActivity {
 
         indentificationNext = findViewById(R.id.identificationNext);
         identificationZone = findViewById(R.id.identificationZone);
-        identificationName = findViewById(R.id.autoCompleteTextView1);
+        identificationName = findViewById(R.id.identificationName);
 
         indentificationNext.setEnabled(false);
         identificationZone.addTextChangedListener(new IdentificationTextWatcher());
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_dropdown_item_1line, ModelStorage.inst().getCounters());
-        identificationName.setAdapter(adapter);
-        identificationName.setThreshold(1);
-        identificationName.setHint(R.string.name);
+        identificationName.setText(ModelStorage.inst().getCounterName());
     }
 
     private class IdentificationTextWatcher implements TextWatcher {

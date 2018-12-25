@@ -188,7 +188,7 @@ public class Inventory extends AppCompatActivity {
     public void recordCount(View view) {
         btnValidate.setEnabled(false);
         if (selectedProduct != null && selectedQty != 0) {
-            ApiClient.getInstance().postQty(
+            ApiClient.inst().postQty(
                     ModelStorage.inst().getSelectedInventory().getId(),
                     selectedProduct.getId(),
                     ModelStorage.inst().getZoneName(),

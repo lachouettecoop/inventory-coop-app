@@ -3,9 +3,10 @@ package org.coop.inventory;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -13,9 +14,11 @@ import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import org.coop.inventory.api.ApiClient;
+import org.coop.inventory.mixin.JWTUtils;
 import org.coop.inventory.model.InventoryModel;
 import org.coop.inventory.model.ModelStorage;
 import org.coop.inventory.model.ProductModel;
+
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
@@ -27,29 +30,70 @@ import java.util.List;
 import cz.msebera.android.httpclient.Header;
 
 public class Server extends AppCompatActivity {
-    private EditText serverUrl;
-    private Button serverCheck;
-    private RadioGroup rgp;
-    private Button serverValidate;
+    private EditText txtServerUrl;
+    private EditText txtEmail;
+    private EditText txtPassword;
+    private Button btnServerCheck;
+    private RadioGroup rgpInventoryList;
+    private Button btnServerNext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.server);
 
-        serverUrl = findViewById(R.id.txtServerUrl);
-        serverCheck = findViewById(R.id.btnServerCheck);
-        rgp = findViewById(R.id.rgInventoryList);
-        serverValidate = findViewById(R.id.btnServerValidate);
+        txtServerUrl = findViewById(R.id.txtServerUrl);
+        txtEmail = findViewById(R.id.txtEmail);
+        txtPassword = findViewById(R.id.txtPassword);
+        btnServerCheck = findViewById(R.id.btnServerCheck);
+        rgpInventoryList = findViewById(R.id.rgInventoryList);
+        btnServerNext = findViewById(R.id.btnServerNext);
 
-        serverUrl.setText("192.168.1.26:8000");
+        txtServerUrl.setText("192.168.123.1:8000");
+        txtServerUrl.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+                setBtnServerCheckEnabled();
+            }
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+        });
 
-        serverValidate.setOnClickListener(new View.OnClickListener() {
+        txtEmail.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+                setBtnServerCheckEnabled();
+            }
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+        });
+
+        txtPassword.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+                setBtnServerCheckEnabled();
+            }
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+        });
+
+        btnServerCheck.setEnabled(false);
+
+        btnServerNext.setEnabled(false);
+        btnServerNext.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                serverUrl.setEnabled(false);
-                serverCheck.setEnabled(false);
-                serverValidate.setEnabled(false);
-                ModelStorage.inst().setSelectedInventory(rgp.getCheckedRadioButtonId());
+                setEnabled(false);
+                btnServerNext.setEnabled(false);
+                ModelStorage.inst().setSelectedInventory(rgpInventoryList.getCheckedRadioButtonId());
                 getProducts();
             }
         });
@@ -58,56 +102,76 @@ public class Server extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        rgp.clearCheck();
-        rgp.removeAllViews();
-        serverUrl.setEnabled(true);
-        serverCheck.setEnabled(true);
-        serverValidate.setEnabled(false);
+        rgpInventoryList.clearCheck();
+        rgpInventoryList.removeAllViews();
+        setEnabled(true);
+        btnServerNext.setEnabled(false);
     }
 
-    private String getServerUrl() {
-        return serverUrl.getText().toString();
+    private void setBtnServerCheckEnabled() {
+        String serverUrl = txtServerUrl.getText().toString();
+        String email = txtEmail.getText().toString();
+        String password = txtPassword.getText().toString();
+
+        btnServerCheck.setEnabled(!serverUrl.isEmpty() && !email.isEmpty() && !password.isEmpty());
+    }
+
+    private void setEnabled(boolean enabled) {
+        txtServerUrl.setEnabled(enabled);
+        txtEmail.setEnabled(enabled);
+        txtPassword.setEnabled(enabled);
+        btnServerCheck.setEnabled(enabled);
+    }
+
+    private String getTxtServerUrl() {
+        return txtServerUrl.getText().toString();
     }
 
     public void checkServer(View view) {
-        rgp.clearCheck();
-        rgp.removeAllViews();
-        serverCheck.setEnabled(false);
-        serverValidate.setEnabled(false);
+        rgpInventoryList.clearCheck();
+        rgpInventoryList.removeAllViews();
+        setEnabled(false);
+        btnServerNext.setEnabled(false);
 
-        String url = getServerUrl();
+        String url = getTxtServerUrl();
         if (!url.startsWith("http")) {
             url = "http://" + url;
         }
-        ApiClient.getInstance().setHostname(url);
+        ApiClient.inst().setHostname(url);
 
-        ApiClient.getInstance().ping(new JsonHttpResponseHandler() {
+        ApiClient.inst().login(txtEmail.getText().toString(), txtPassword.getText().toString(), new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 try {
-                    if (response.get("name").equals("inventory-coop") &&
-                            response.get("status").equals("ok")) showInventorySelection();
-                } catch (JSONException e)
-                {
+                    String token = response.getString("token");
+                    try {
+                        JSONObject userInfo = JWTUtils.decoded(token);
+                        ModelStorage.inst().setCounterName(userInfo.getString("lastname"));
+                        ApiClient.inst().setAuthorization(token);
+                        showInventorySelection();
+                    } catch (Exception e) {
+                        showToast("Bad token" + e);
+                    }
+                } catch (JSONException e) {
                     showToast("Bad server");
                 } finally {
-                    serverCheck.setEnabled(true);
+                    setEnabled(true);
                 }
             }
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                 showToast("Bad server");
-                serverCheck.setEnabled(true);
+                setEnabled(true);
             }
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 showToast("Bad server");
-                serverCheck.setEnabled(true);
+                setEnabled(true);
             }
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
                 showToast("Bad server");
-                serverCheck.setEnabled(true);
+                setEnabled(true);
             }
         });
     }
@@ -120,7 +184,7 @@ public class Server extends AppCompatActivity {
 
     public void showInventorySelection() {
         ModelStorage.inst().getInventoriesList().clear();
-        ApiClient.getInstance().getInventories(new JsonHttpResponseHandler() {
+        ApiClient.inst().getInventories(new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 try {
@@ -164,23 +228,23 @@ public class Server extends AppCompatActivity {
                 RadioButton rbn = new RadioButton(this);
                 rbn.setId(inventory.getRbnId());
                 rbn.setText(inventory.getDate());
-                rgp.addView(rbn);
+                rgpInventoryList.addView(rbn);
                 if (isFirst) {
-                    rgp.check(rbn.getId());
+                    rgpInventoryList.check(rbn.getId());
                     isFirst = false;
                 }
             }
         }
         if(isFirst) {
             // No inventory -> No button
-            serverValidate.setEnabled(false);
+            btnServerNext.setEnabled(false);
         } else {
-            serverValidate.setEnabled(true);
+            btnServerNext.setEnabled(true);
         }
     }
 
     private void getProducts() {
-        ApiClient.getInstance().getProducts(
+        ApiClient.inst().getProducts(
                 ModelStorage.inst().getSelectedInventory().getId(),
                 new JsonHttpResponseHandler() {
                     @Override
@@ -209,7 +273,7 @@ public class Server extends AppCompatActivity {
     }
 
     private void getCounts() {
-        ApiClient.getInstance().getCounts(
+        ApiClient.inst().getCounts(
                 ModelStorage.inst().getSelectedInventory().getId(),
                 new JsonHttpResponseHandler() {
                     @Override

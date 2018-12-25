@@ -13,10 +13,13 @@
         android:layout_height="wrap_content"
         app:srcCompat="@drawable/logo" />
 
-    <AutoCompleteTextView
-        android:id="@+id/autoCompleteTextView1"
+    <EditText
+        android:id="@+id/identificationName"
         android:layout_width="match_parent"
-        android:layout_height="40dp" />
+        android:layout_height="40dp"
+        android:ems="10"
+        android:hint="@string/name"
+        android:inputType="text" />
 
     <EditText
         android:id="@+id/identificationZone"

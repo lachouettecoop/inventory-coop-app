@@ -21,6 +21,24 @@ public class ApiClient {
         get("ping", null, responseHandler);
     }
 
+    public void login(String email, String password, JsonHttpResponseHandler responseHandler) {
+        try {
+            JSONObject jsonParams = new JSONObject();
+            jsonParams.put("email", email);
+            jsonParams.put("password", password);
+            StringEntity entity = new StringEntity(jsonParams.toString());
+            post("login", null, entity, responseHandler);
+        } catch (JSONException e) {
+            //TODO
+        } catch (UnsupportedEncodingException e) {
+            //TODO
+        }
+    }
+
+    public void setAuthorization(String token) {
+        client.addHeader("Authorization", "Bearer " + token);
+    }
+
     public void getInventories(JsonHttpResponseHandler responseHandler) {
         get("inventories", null, responseHandler);
     }
@@ -62,7 +80,7 @@ public class ApiClient {
         return _hostName + "/api/v1/" + relativeUrl;
     }
 
-    public static ApiClient getInstance()
+    public static ApiClient inst()
     {
         if (instance == null)
             instance = new ApiClient();
@@ -71,6 +89,8 @@ public class ApiClient {
     private ApiClient() {
         client = new AsyncHttpClient();
         client.setMaxRetriesAndTimeout(2, 1000);
+        client.addHeader("Accept", "application/json");
+        client.addHeader("Content-type", "application/json;charset=utf-8");
     }
     private static ApiClient instance = null;
     private AsyncHttpClient client = null;

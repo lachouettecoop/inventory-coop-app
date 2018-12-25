@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">InventaireCoop</string>
     <string name="serverUrl">URL du serveur:</string>
+    <string name="email">Email:</string>
+    <string name="password">Mot de passe:</string>
     <string name="next">Suivant</string>
     <string name="urlHint">Entrer l\'adresse du serveur</string>
     <string name="check">Verifier</string>
