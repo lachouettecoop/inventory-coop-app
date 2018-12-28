@@ -63,9 +63,6 @@ public class Inventory extends AppCompatActivity {
         btnValidate = findViewById(R.id.btnValidate);
         listView = findViewById(R.id.countsView);
 
-        txtBarcode.setAdapter(new ArrayAdapter<String>(this,
-                android.R.layout.simple_dropdown_item_1line,
-                ModelStorage.inst().getSelectedInventory().getBarcodes()));
         txtBarcode.setThreshold(4);
         txtBarcode.setHint(R.string.barcode);
         txtBarcode.addTextChangedListener(new TextWatcher() {
@@ -150,7 +147,12 @@ public class Inventory extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        txtBarcode.setText("");
+        if (selectedProduct == null) {
+            txtBarcode.setText("");
+        }
+        txtBarcode.setAdapter(new ArrayAdapter<String>(this,
+                android.R.layout.simple_dropdown_item_1line,
+                ModelStorage.inst().getSelectedInventory().getBarcodes()));
         txtName.setAdapter(new ArrayAdapter<String>(this,
                 android.R.layout.simple_dropdown_item_1line,
                 ModelStorage.inst().getSelectedInventory().getProductNames()));

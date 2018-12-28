@@ -49,7 +49,7 @@ public class Server extends AppCompatActivity {
         rgpInventoryList = findViewById(R.id.rgInventoryList);
         btnServerNext = findViewById(R.id.btnServerNext);
 
-        txtServerUrl.setText("192.168.123.1:8000");
+        txtServerUrl.setText("https://inventaires.lachouettecoop.fr");
         txtServerUrl.addTextChangedListener(new TextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {

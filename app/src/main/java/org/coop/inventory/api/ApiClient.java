@@ -44,11 +44,13 @@ public class ApiClient {
     }
 
     public void getProducts(String inventoryId, JsonHttpResponseHandler responseHandler) {
-        get("products?{inventory:" + inventoryId + "}", null, responseHandler);
+        RequestParams where = new RequestParams("where", "{\"inventory\":\""+ inventoryId + "\"}");
+        get("products", where, responseHandler);
     }
 
     public void getCounts(String inventoryId, JsonHttpResponseHandler responseHandler) {
-        get("counts?{inventory:" + inventoryId + "}", null, responseHandler);
+        RequestParams where = new RequestParams("where", "{\"inventory\":\""+ inventoryId + "\"}");
+        get("counts", where, responseHandler);
     }
 
     public void postQty(String inventory, String product, String zone, String counter, double qty, JsonHttpResponseHandler responseHandler) {
@@ -88,7 +90,7 @@ public class ApiClient {
     }
     private ApiClient() {
         client = new AsyncHttpClient();
-        client.setMaxRetriesAndTimeout(2, 1000);
+        client.setMaxRetriesAndTimeout(2, 2000);
         client.addHeader("Accept", "application/json");
         client.addHeader("Content-type", "application/json;charset=utf-8");
     }
