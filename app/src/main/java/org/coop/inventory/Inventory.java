@@ -202,16 +202,21 @@ public class Inventory extends AppCompatActivity {
                             Date date = new Date();
                             SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
                             dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+                            String id = "";
                             String updated = dateFormat.format(date);
                             double qty = selectedQty;
                             try {
+                                id = response.getString("id");
                                 qty = response.getDouble("qty");
                                 updated = response.getString("updated");
                             } catch (JSONException e) {
                             }
                             countsAdapter.insert(new CountView(selectedProduct.getName(), qty, updated), 0);
+
+                            ProductModel product = ModelStorage.inst().getSelectedInventory().getProductsByName().get(selectedProduct.getName());
+                            product.addCount(id, ModelStorage.inst().getZoneName(), ModelStorage.inst().getCounterName(), qty, updated);
+
                             txtBarcode.setText("");
-                            //TODO
                         }
                         @Override
                         public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {

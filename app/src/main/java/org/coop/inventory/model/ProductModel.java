@@ -11,7 +11,7 @@ public class ProductModel {
     public Map<String, CountModel> getCounts() {
         return counts;
     }
-    public void addCount(String id, String zoneName, String counterName, int qty, String updated) {
+    public void addCount(String id, String zoneName, String counterName, double qty, String updated) {
         CountModel count = new CountModel();
         count.setId(id);
         count.setZoneName(zoneName);
@@ -21,6 +21,10 @@ public class ProductModel {
         counts.put(id, count);
     }
     private Map<String, CountModel> counts;
+
+    public void clear() {
+        counts.clear();
+    }
 
     public String getId() {
         return id;

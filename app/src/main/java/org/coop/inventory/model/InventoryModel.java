@@ -54,6 +54,15 @@ public class InventoryModel {
     private Map<String, ProductModel> productsByBarcode;
     private Map<String, ProductModel> productsByName;
 
+    public void clear() {
+        for(ProductModel product: productsById.values()) {
+            product.clear();
+        }
+        productsById.clear();
+        productsByBarcode.clear();
+        productsByName.clear();
+    }
+
     public String getDate() {
         return date;
     }

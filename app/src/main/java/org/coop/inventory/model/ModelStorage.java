@@ -44,6 +44,18 @@ public class ModelStorage {
     }
     private InventoryModel selectedInventory = null;
 
+    public void clear() {
+        for(InventoryModel inventory: inventoriesList) {
+            inventory.clear();
+        }
+        inventoriesList.clear();
+        zones.clear();
+        counters.clear();
+        selectedInventory = null;
+        zoneName = null;
+        counterName = null;
+    }
+
     public String getZoneName() {
         return zoneName;
     }

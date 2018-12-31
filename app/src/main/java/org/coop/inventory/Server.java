@@ -106,6 +106,7 @@ public class Server extends AppCompatActivity {
         rgpInventoryList.removeAllViews();
         setEnabled(true);
         btnServerNext.setEnabled(false);
+        ModelStorage.inst().clear();
     }
 
     private void setBtnServerCheckEnabled() {
@@ -183,7 +184,6 @@ public class Server extends AppCompatActivity {
     }
 
     public void showInventorySelection() {
-        ModelStorage.inst().getInventoriesList().clear();
         ApiClient.inst().getInventories(new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -244,6 +244,7 @@ public class Server extends AppCompatActivity {
     }
 
     private void getProducts() {
+        ModelStorage.inst().getSelectedInventory().clear();
         ApiClient.inst().getProducts(
                 ModelStorage.inst().getSelectedInventory().getId(),
                 new JsonHttpResponseHandler() {
