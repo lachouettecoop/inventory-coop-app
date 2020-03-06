@@ -12,7 +12,7 @@
     <string name="barcode">Code barre</string>
     <string name="productName">Nom du produit</string>
     <string name="name">Votre nom</string>
-    <string name="zone">Num. de la zone</string>
+    <string name="team">Num. de l\'équipe</string>
     <string name="count">Quantité</string>
     <string name="validate">Valider</string>
 </resources>

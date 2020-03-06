@@ -15,7 +15,7 @@ public class Identification extends AppCompatActivity {
 
     private Button indentificationNext;
     private EditText identificationName;
-    private EditText identificationZone;
+    private EditText identificationTeam;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,11 +23,11 @@ public class Identification extends AppCompatActivity {
         setContentView(R.layout.identification);
 
         indentificationNext = findViewById(R.id.identificationNext);
-        identificationZone = findViewById(R.id.identificationZone);
+        identificationTeam = findViewById(R.id.identificationTeam);
         identificationName = findViewById(R.id.identificationName);
 
         indentificationNext.setEnabled(false);
-        identificationZone.addTextChangedListener(new IdentificationTextWatcher());
+        identificationTeam.addTextChangedListener(new IdentificationTextWatcher());
         identificationName.setText(ModelStorage.inst().getCounterName());
     }
 
@@ -43,7 +43,7 @@ public class Identification extends AppCompatActivity {
     }
 
     private void manageNextButton() {
-        if(identificationName.getText().length() > 0 && identificationZone.getText().length() > 0) {
+        if(identificationName.getText().length() > 0 && identificationTeam.getText().length() > 0) {
             indentificationNext.setEnabled(true);
         } else {
             indentificationNext.setEnabled(false);
@@ -52,7 +52,7 @@ public class Identification extends AppCompatActivity {
 
     public void switchToServerActivity(View view) {
         ModelStorage.inst().setCounterName(identificationName.getText().toString());
-        ModelStorage.inst().setZoneName(identificationZone.getText().toString());
+        ModelStorage.inst().setZoneName(identificationTeam.getText().toString());
         Intent intentApp = new Intent(Identification.this, Inventory.class);
         Identification.this.startActivity(intentApp);
     }
